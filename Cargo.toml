@@ -88,7 +88,7 @@ axum = { version = "0.8.0", features = [
 mime_guess = "2.0"
 rust-embed = "8.7"
 config = { version = "0.15.7", features = ["toml"], default-features = false }
-dirs = "6.0.0"
+dirs = "7.0.0"
 serde = { version = "1.0.217", default-features = false, features = ["derive"] }
 anyhow = "1.0.95"
 strum = { version = "0.28.0", features = ["derive"] }
