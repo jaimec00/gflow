@@ -4,7 +4,7 @@ use super::{
 };
 use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::path::PathBuf;
 use std::time::{Duration, SystemTime};
 use uuid::Uuid;
@@ -56,6 +56,12 @@ pub struct JobSpec {
     // execution until this wall-clock time has passed.
     #[serde(default)]
     pub scheduled_at: Option<SystemTime>,
+    /// Environment variables exported into the job shell (`gsrun` forwards the
+    /// submitter's environment); applied before the daemon's own variables so
+    /// `CUDA_VISIBLE_DEVICES` and `GFLOW_ARRAY_TASK_ID` always win.
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub env: Option<BTreeMap<String, String>>,
 }
 
 impl Default for JobSpec {
@@ -81,6 +87,7 @@ impl Default for JobSpec {
             dependency_mode: None,
             auto_cancel_on_dependency_failure: true,
             scheduled_at: None,
+            env: None,
         }
     }
 }
@@ -243,6 +250,12 @@ pub struct Job {
     /// Do-not-start-before time (`--begin`); None means start as soon as possible.
     #[serde(default)]
     pub scheduled_at: Option<SystemTime>,
+    /// Environment variables exported into the job shell (`gsrun` forwards the
+    /// submitter's environment); applied before the daemon's own variables so
+    /// `CUDA_VISIBLE_DEVICES` and `GFLOW_ARRAY_TASK_ID` always win.
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub env: Option<BTreeMap<String, String>>,
 }
 
 #[derive(Default)]
@@ -274,6 +287,7 @@ pub struct JobBuilder {
     notifications: Option<JobNotifications>,
     gpu_sharing_mode: Option<GpuSharingMode>,
     scheduled_at: Option<SystemTime>,
+    env: Option<BTreeMap<String, String>>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, Default)]
@@ -479,6 +493,11 @@ impl JobBuilder {
         self
     }
 
+    pub fn env(mut self, env: Option<BTreeMap<String, String>>) -> Self {
+        self.env = env;
+        self
+    }
+
     pub fn build(self) -> Job {
         Job {
             id: 0,
@@ -520,6 +539,7 @@ impl JobBuilder {
             reason: None,
             alive: None,
             scheduled_at: self.scheduled_at,
+            env: self.env,
         }
     }
 }
@@ -562,6 +582,7 @@ impl Default for Job {
             reason: None,
             alive: None,
             scheduled_at: None,
+            env: None,
         }
     }
 }
@@ -609,6 +630,7 @@ impl Job {
             reason: runtime.reason,
             alive: None,
             scheduled_at: spec.scheduled_at,
+            env: spec.env,
         }
     }
 
@@ -635,6 +657,7 @@ impl Job {
             dependency_mode: self.dependency_mode,
             auto_cancel_on_dependency_failure: self.auto_cancel_on_dependency_failure,
             scheduled_at: self.scheduled_at,
+            env: self.env,
         };
 
         let runtime = JobRuntime {

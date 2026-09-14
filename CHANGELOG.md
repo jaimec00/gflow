@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **gsrun: blocking, srun-style submit**: submits one job and waits for it to
+  reach a terminal state, streaming its log to stdout and exiting with a status
+  derived from the outcome (`0` / payload exit code / `124` timeout / `130`
+  cancelled). It waits on the `/events` stream with a poll fallback, cancels
+  the job on `SIGINT`/`SIGTERM`, and exports the submitter's environment into
+  the job (new optional `env` field on the job model, applied by both
+  executors before the daemon's own variables).
 - **web: dark mode with toggle**: the console follows the system color
   scheme by default and adds a light/dark toggle in the header; the choice
   persists in `localStorage` and is applied before first paint to avoid a

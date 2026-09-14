@@ -294,6 +294,7 @@ mod tests {
             reason: None,
             alive: None,
             scheduled_at: None,
+            env: None,
         }
     }
 
@@ -345,6 +346,7 @@ mod tests {
             reason: None,
             alive: None,
             scheduled_at: None,
+            env: None,
         }
     }
 
@@ -385,6 +387,7 @@ mod tests {
             reason: None,
             alive: None,
             scheduled_at: None,
+            env: None,
         }
     }
 

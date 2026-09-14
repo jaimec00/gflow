@@ -398,6 +398,25 @@ impl Client {
         Ok(result)
     }
 
+    /// Subscribe to the daemon's server-sent-events stream (`GET /events`).
+    /// The response body is a live `text/event-stream`; read it with
+    /// `bytes_stream()` and parse the `event:` / `data:` lines.
+    pub async fn subscribe_events(&self) -> anyhow::Result<reqwest::Response> {
+        let response = self
+            .client
+            .get(format!("{}/events", self.base_url))
+            .send()
+            .await
+            .map_err(connection_error_context)?;
+        if !response.status().is_success() {
+            return Err(anyhow!(
+                "Failed to subscribe to events (status {})",
+                response.status()
+            ));
+        }
+        Ok(response)
+    }
+
     pub async fn get_job_log_path(&self, job_id: u32) -> anyhow::Result<Option<String>> {
         tracing::debug!("Getting log path for job {job_id}");
         let response = self

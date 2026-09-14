@@ -412,6 +412,12 @@ impl Executor for ProcessExecutor {
             .stderr(Stdio::from(stderr_file))
             .env("GFLOW_ARRAY_TASK_ID", job.task_id.unwrap_or(0).to_string());
 
+        // Submitter-exported environment (gsrun) goes first so the daemon's own
+        // variables below override anything it contains.
+        if let Some(env) = &job.env {
+            command.envs(env);
+        }
+
         if let Some(gpu_ids) = &job.gpu_ids {
             command.env(
                 "CUDA_VISIBLE_DEVICES",
@@ -679,6 +685,14 @@ impl Executor for TmuxExecutor {
             session.enable_pipe_pane(&log_path)?;
 
             session.try_send_command(&format!("cd {}", job.run_dir.display()))?;
+            if let Some(env) = &job.env {
+                for (key, value) in env {
+                    session.try_send_command(&format!(
+                        "export {key}={}",
+                        shell_escape::escape(value.as_str().into())
+                    ))?;
+                }
+            }
             session.try_send_command(&format!(
                 "export GFLOW_ARRAY_TASK_ID={}",
                 job.task_id.unwrap_or(0)

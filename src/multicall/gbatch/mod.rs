@@ -5,8 +5,8 @@ use gflow::config::load_config;
 use std::ffi::OsString;
 use std::io::{self, IsTerminal};
 
-mod cli;
-mod commands;
+pub(crate) mod cli;
+pub(crate) mod commands;
 
 pub async fn run(argv: Vec<OsString>) -> Result<()> {
     let args = cli::GBatch::parse_from(argv);

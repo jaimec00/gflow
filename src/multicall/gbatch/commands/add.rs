@@ -9,7 +9,7 @@ use lettre::message::Mailbox;
 use std::{collections::HashMap, env, fs, io::Read, path::PathBuf};
 
 /// Validate project against configuration requirements
-fn validate_project(job: &mut Job, config: &gflow::config::Config) -> Result<()> {
+pub(crate) fn validate_project(job: &mut Job, config: &gflow::config::Config) -> Result<()> {
     let normalized =
         gflow::utils::validate_project_policy(job.project.as_deref(), &config.projects)?;
     job.project = normalized.map(|s| s.into());
@@ -457,7 +457,7 @@ fn detect_current_conda_env() -> Option<String> {
         .filter(|env_name| !env_name.is_empty())
 }
 
-async fn build_job(
+pub(crate) async fn build_job(
     args: &cli::AddArgs,
     task_id: Option<u32>,
     client: &Client,

@@ -51,6 +51,10 @@ path = "src/bin/gctl/main.rs"
 name = "gstats"
 path = "src/bin/gstats/main.rs"
 
+[[bin]]
+name = "gsrun"
+path = "src/bin/gsrun/main.rs"
+
 
 [dependencies]
 tmux_interface = { version = "0.4.0" }
@@ -74,6 +78,7 @@ lazy_static = { version = "1.4.0", optional = true }
 reqwest = { version = "0.13.0", features = [
     "json",
     "query",
+    "stream",
     "rustls-no-provider",
     "webpki-roots"
 ], default-features = false }

@@ -142,6 +142,10 @@ export default defineConfig({
                                 text: "gstats Reference",
                                 link: "/reference/gstats-reference",
                             },
+                            {
+                                text: "gsrun Reference",
+                                link: "/reference/gsrun-reference",
+                            },
                         ],
                     },
                 ],
