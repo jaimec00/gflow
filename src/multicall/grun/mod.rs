@@ -55,9 +55,7 @@ pub async fn run(argv: Vec<OsString>) -> Result<()> {
     let add_args = args.srun_args.to_add_args();
     let mut job =
         crate::multicall::gbatch::commands::add::build_job(&add_args, None, &client, None).await?;
-    if !args.srun_args.no_export_env {
-        job.env = Some(exported_env());
-    }
+    apply_env_export(&mut job, &args.srun_args);
     crate::multicall::gbatch::commands::add::validate_project(&mut job, &config)?;
 
     if args.srun_args.dry_run {
@@ -72,6 +70,22 @@ pub async fn run(argv: Vec<OsString>) -> Result<()> {
     let code = wait_for_job(&client, job_id).await?;
     io::stdout().flush().ok();
     std::process::exit(code);
+}
+
+/// Export the caller's environment into the job unless disabled. An exported
+/// environment already carries the active conda/pixi/virtualenv (`PATH`,
+/// `CONDA_PREFIX`, ...), so the conda env that `gbatch` auto-detects from
+/// `CONDA_DEFAULT_ENV` is dropped: activating it again in the job shell is
+/// redundant, and fails outright for non-conda tools (pixi sets
+/// `CONDA_DEFAULT_ENV` too). An explicit `--conda-env` is always honoured.
+fn apply_env_export(job: &mut Job, args: &cli::SrunArgs) {
+    if args.no_export_env {
+        return;
+    }
+    job.env = Some(exported_env());
+    if args.conda_env.is_none() {
+        job.conda_env = None;
+    }
 }
 
 /// The current environment, minus the blocklist and anything that is not a
@@ -333,6 +347,30 @@ mod tests {
 
         assert!(parse_sse_event("event: connected\ndata: {}", 7).is_none());
         assert!(parse_sse_event(": keep-alive", 7).is_none());
+    }
+
+    #[test]
+    fn env_export_drops_auto_detected_conda_env_but_keeps_explicit() {
+        let auto_detected = || Job {
+            conda_env: Some("proteus:gpu".into()),
+            ..Job::default()
+        };
+        let parse = |argv: &[&str]| cli::GSrun::try_parse_from(argv).unwrap().srun_args;
+
+        let mut job = auto_detected();
+        apply_env_export(&mut job, &parse(&["grun", "cmd"]));
+        assert!(job.env.is_some());
+        assert!(job.conda_env.is_none());
+
+        let mut job = auto_detected();
+        apply_env_export(&mut job, &parse(&["grun", "--conda-env", "myenv", "cmd"]));
+        assert!(job.env.is_some());
+        assert_eq!(job.conda_env.as_deref(), Some("proteus:gpu"));
+
+        let mut job = auto_detected();
+        apply_env_export(&mut job, &parse(&["grun", "--no-export-env", "cmd"]));
+        assert!(job.env.is_none());
+        assert_eq!(job.conda_env.as_deref(), Some("proteus:gpu"));
     }
 
     #[test]

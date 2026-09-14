@@ -38,6 +38,8 @@ grun --gpus 1 --dry-run -- python train.py
 
 By default `grun` exports its own environment into the job, as `srun` does, so the job sees the same `PATH`, virtualenv or conda activation, and variables as the shell that submitted it. `gbatch` jobs, by contrast, run with the daemon's environment.
 
+Because the exported environment already carries the active conda, pixi, or virtualenv activation, `grun` does not auto-detect a conda env from `CONDA_DEFAULT_ENV` the way `gbatch` does (pixi sets that variable too, and re-activating would fail). Pass `--conda-env` to activate one explicitly.
+
 `CUDA_VISIBLE_DEVICES` and `GFLOW_ARRAY_TASK_ID` are never forwarded; the daemon sets them per job. Variables describing the submitting shell (`PWD`, `OLDPWD`, `SHLVL`, `TMUX`, `TMUX_PANE`, `_`) and names that are not valid shell identifiers are dropped too.
 
 ## Exit Status
