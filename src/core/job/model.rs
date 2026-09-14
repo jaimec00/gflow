@@ -56,7 +56,7 @@ pub struct JobSpec {
     // execution until this wall-clock time has passed.
     #[serde(default)]
     pub scheduled_at: Option<SystemTime>,
-    /// Environment variables exported into the job shell (`gsrun` forwards the
+    /// Environment variables exported into the job shell (`grun` forwards the
     /// submitter's environment); applied before the daemon's own variables so
     /// `CUDA_VISIBLE_DEVICES` and `GFLOW_ARRAY_TASK_ID` always win.
     #[serde(default)]
@@ -250,7 +250,7 @@ pub struct Job {
     /// Do-not-start-before time (`--begin`); None means start as soon as possible.
     #[serde(default)]
     pub scheduled_at: Option<SystemTime>,
-    /// Environment variables exported into the job shell (`gsrun` forwards the
+    /// Environment variables exported into the job shell (`grun` forwards the
     /// submitter's environment); applied before the daemon's own variables so
     /// `CUDA_VISIBLE_DEVICES` and `GFLOW_ARRAY_TASK_ID` always win.
     #[serde(default)]

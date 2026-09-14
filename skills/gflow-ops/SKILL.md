@@ -55,7 +55,7 @@ Use CLI only when MCP is unavailable or when testing the CLI itself.
 - Queue: `gqueue`, `gqueue -a`, `gqueue -s Running`
 - Scheduler info: `ginfo`, `gstats`
 - Submit: `gbatch ...`
-- Submit and wait (blocking, srun-style): `gsrun ... -- <cmd>`
+- Submit and wait (blocking, srun-style): `grun ... -- <cmd>`
 - Inspect: `gjob show <job_id>`, `gjob log <job_id>`
 - Mutate: `gjob hold <job_id>`, `gjob release <job_id>`, `gjob update ...`, `gcancel <job_id>`
 

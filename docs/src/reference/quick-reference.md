@@ -15,8 +15,8 @@ gflowd service install   # optional: auto-start + crash recovery
 
 ```bash
 # Like srun: block until the job finishes, stream its log, exit with its status
-gsrun --gpus 1 -- python train.py
-gsrun --gpus 1 -- python train.py && gsrun --gpus 1 -- python eval.py
+grun --gpus 1 -- python train.py
+grun --gpus 1 -- python train.py && grun --gpus 1 -- python eval.py
 ```
 
 ## Inspect + Monitor

@@ -52,8 +52,8 @@ name = "gstats"
 path = "src/bin/gstats/main.rs"
 
 [[bin]]
-name = "gsrun"
-path = "src/bin/gsrun/main.rs"
+name = "grun"
+path = "src/bin/grun/main.rs"
 
 
 [dependencies]

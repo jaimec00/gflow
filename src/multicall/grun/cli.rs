@@ -4,7 +4,7 @@ use gflow::build_info::version;
 
 #[derive(Debug, Parser)]
 #[command(
-    name = "gsrun",
+    name = "grun",
     author,
     version = version(),
     about = "Submits a job to the gflow scheduler and blocks until it finishes. Inspired by srun."
@@ -19,7 +19,7 @@ pub struct GSrun {
 }
 
 /// The `gbatch` submission flags that make sense for a single, attended job.
-/// Array / parameter-sweep / retry flags are deliberately absent: `gsrun`
+/// Array / parameter-sweep / retry flags are deliberately absent: `grun`
 /// follows exactly one job.
 #[derive(Debug, Parser, Clone)]
 pub struct SrunArgs {
@@ -104,7 +104,7 @@ pub struct SrunArgs {
     #[arg(short = 'P', long, value_hint = clap::ValueHint::Other)]
     pub project: Option<String>,
 
-    /// Do not forward the current environment to the job (by default gsrun
+    /// Do not forward the current environment to the job (by default grun
     /// exports its own environment into the job shell, like srun)
     #[arg(long)]
     pub no_export_env: bool,
@@ -155,7 +155,7 @@ mod tests {
     #[test]
     fn parses_flags_before_double_dash_command() {
         let args = GSrun::try_parse_from([
-            "gsrun", "--gpus", "1", "--time", "2:00:00", "--", "python", "train.py", "--lr", "0.1",
+            "grun", "--gpus", "1", "--time", "2:00:00", "--", "python", "train.py", "--lr", "0.1",
         ])
         .expect("should parse");
         assert_eq!(args.srun_args.gpus, Some(1));
@@ -168,13 +168,13 @@ mod tests {
 
     #[test]
     fn requires_a_command() {
-        assert!(GSrun::try_parse_from(["gsrun", "--gpus", "1"]).is_err());
+        assert!(GSrun::try_parse_from(["grun", "--gpus", "1"]).is_err());
     }
 
     #[test]
     fn maps_onto_gbatch_args() {
         let args =
-            GSrun::try_parse_from(["gsrun", "-g", "2", "--shared", "--gpu-memory", "8G", "cmd"])
+            GSrun::try_parse_from(["grun", "-g", "2", "--shared", "--gpu-memory", "8G", "cmd"])
                 .expect("should parse");
         let add = args.srun_args.to_add_args();
         assert_eq!(add.gpus, Some(2));

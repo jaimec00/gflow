@@ -1,4 +1,4 @@
-//! `gsrun`: submit one job and block until it reaches a terminal state,
+//! `grun`: submit one job and block until it reaches a terminal state,
 //! streaming its log to stdout and exiting with a status derived from the
 //! outcome. The srun to gbatch's sbatch.
 //!
@@ -67,7 +67,7 @@ pub async fn run(argv: Vec<OsString>) -> Result<()> {
 
     let response = client.add_job(job).await.context("Failed to submit job")?;
     let job_id = response.id;
-    eprintln!("gsrun: submitted job {} ({})", job_id, response.run_name);
+    eprintln!("grun: submitted job {} ({})", job_id, response.run_name);
 
     let code = wait_for_job(&client, job_id).await?;
     io::stdout().flush().ok();
@@ -248,9 +248,9 @@ async fn terminal_state(client: &Client, job_id: u32) -> Result<Option<JobState>
 }
 
 async fn cancel(client: &Client, job_id: u32) {
-    eprintln!("gsrun: interrupted, cancelling job {job_id}");
+    eprintln!("grun: interrupted, cancelling job {job_id}");
     if let Err(error) = client.cancel_job(job_id).await {
-        eprintln!("gsrun: failed to cancel job {job_id}: {error}");
+        eprintln!("grun: failed to cancel job {job_id}: {error}");
     }
 }
 

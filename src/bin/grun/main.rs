@@ -2,5 +2,5 @@
 mod multicall;
 
 fn main() -> std::process::ExitCode {
-    multicall::exec("gsrun")
+    multicall::exec("grun")
 }

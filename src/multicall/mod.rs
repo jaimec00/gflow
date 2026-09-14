@@ -10,7 +10,7 @@ pub mod gflowd;
 pub mod ginfo;
 pub mod gjob;
 pub mod gqueue;
-pub mod gsrun;
+pub mod grun;
 pub mod gstats;
 pub mod mcp;
 
@@ -56,12 +56,12 @@ pub async fn dispatch(argv: Vec<OsString>) -> anyhow::Result<()> {
         "gjob" => gjob::run(argv).await,
         "mcp" => mcp::run(argv).await,
         "gqueue" => gqueue::run(argv).await,
-        "gsrun" => gsrun::run(argv).await,
+        "grun" => grun::run(argv).await,
         "gstats" => gstats::run(argv).await,
         _ => {
             print_top_level_help();
             anyhow::bail!(
-                "Unknown command '{}'. Expected one of: gbatch, gcancel, gctl, gflowd, ginfo, gjob, mcp, gqueue, gsrun, gstats",
+                "Unknown command '{}'. Expected one of: gbatch, gcancel, gctl, gflowd, ginfo, gjob, mcp, gqueue, grun, gstats",
                 program.to_string_lossy()
             );
         }
@@ -70,7 +70,7 @@ pub async fn dispatch(argv: Vec<OsString>) -> anyhow::Result<()> {
 
 pub fn print_top_level_help() {
     eprintln!(
-        "gflow (multi-call)\n\nUsage:\n  gflow __multicall <command> [args...]\n  gflow <command> [args...]\n\nCommands:\n  gbatch\n  gcancel\n  gctl\n  gflowd\n  ginfo\n  gjob\n  mcp\n  gqueue\n  gsrun\n  gstats\n"
+        "gflow (multi-call)\n\nUsage:\n  gflow __multicall <command> [args...]\n  gflow <command> [args...]\n\nCommands:\n  gbatch\n  gcancel\n  gctl\n  gflowd\n  ginfo\n  gjob\n  mcp\n  gqueue\n  grun\n  gstats\n"
     );
 }
 

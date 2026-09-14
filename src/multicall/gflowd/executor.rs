@@ -412,7 +412,7 @@ impl Executor for ProcessExecutor {
             .stderr(Stdio::from(stderr_file))
             .env("GFLOW_ARRAY_TASK_ID", job.task_id.unwrap_or(0).to_string());
 
-        // Submitter-exported environment (gsrun) goes first so the daemon's own
+        // Submitter-exported environment (grun) goes first so the daemon's own
         // variables below override anything it contains.
         if let Some(env) = &job.env {
             command.envs(env);

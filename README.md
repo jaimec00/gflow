@@ -58,7 +58,7 @@ gbatch --gpus 1 --name demo bash -lc 'echo "hello from gflow"; sleep 30'
 gqueue
 
 # or submit and wait (srun-style): streams the log, exits with the job's status
-gsrun --gpus 1 -- bash -lc 'echo "hello from gflow"'
+grun --gpus 1 -- bash -lc 'echo "hello from gflow"'
 gjob show <job_id>
 gflowd stop
 ```
