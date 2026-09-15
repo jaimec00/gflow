@@ -109,5 +109,19 @@ pub async fn run(argv: Vec<OsString>) -> anyhow::Result<()> {
         config.daemon.gpu_poll_interval_secs = gpu_poll_interval_secs;
     }
 
+    // Jobs inherit the daemon's resource limits; make sure they get the full
+    // open-file budget rather than the launcher's soft default.
+    #[cfg(unix)]
+    match gflow::platform::raise_open_file_limit() {
+        Ok((before, hard)) => {
+            tracing::info!(
+                soft_before = before,
+                hard,
+                "Raised open-file soft limit to hard limit"
+            )
+        }
+        Err(error) => tracing::warn!(%error, "Failed to raise open-file soft limit"),
+    }
+
     server::run(config).await
 }

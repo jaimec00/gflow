@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **gflowd raises its open-file soft limit to the hard limit at startup**, so
+  jobs inherit the full descriptor budget. A systemd user service starts at a
+  soft limit of 1024, which a worker-backed `DataLoader` exhausts as soon as a
+  second loader is opened.
 - **grun: blocking, srun-style submit**: submits one job and waits for it to
   reach a terminal state, streaming its log to stdout and exiting with a status
   derived from the outcome (`0` / payload exit code / `124` timeout / `130`
