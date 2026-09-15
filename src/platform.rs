@@ -12,7 +12,7 @@ pub fn get_current_username() -> String {
 /// interactive login shell typically at the hard limit). Raising soft up to
 /// hard needs no privilege. Returns `(soft_before, hard)` on success.
 #[cfg(unix)]
-pub fn raise_open_file_limit() -> std::io::Result<(u64, u64)> {
+pub fn raise_open_file_limit() -> std::io::Result<(libc::rlim_t, libc::rlim_t)> {
     let mut limit = libc::rlimit {
         rlim_cur: 0,
         rlim_max: 0,
@@ -29,14 +29,14 @@ pub fn raise_open_file_limit() -> std::io::Result<(u64, u64)> {
             return Err(std::io::Error::last_os_error());
         }
     }
-    Ok((u64::from(before), u64::from(limit.rlim_max)))
+    Ok((before, limit.rlim_max))
 }
 
 #[cfg(all(test, unix))]
 mod rlimit_tests {
     use super::raise_open_file_limit;
 
-    fn nofile() -> (u64, u64) {
+    fn nofile() -> (libc::rlim_t, libc::rlim_t) {
         let mut limit = libc::rlimit {
             rlim_cur: 0,
             rlim_max: 0,
@@ -45,7 +45,7 @@ mod rlimit_tests {
             unsafe { libc::getrlimit(libc::RLIMIT_NOFILE, &mut limit) },
             0
         );
-        (u64::from(limit.rlim_cur), u64::from(limit.rlim_max))
+        (limit.rlim_cur, limit.rlim_max)
     }
 
     #[test]
